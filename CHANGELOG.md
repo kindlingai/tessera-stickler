@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.2](https://github.com/kindlingai/tessera-stickler/compare/v0.4.1...v0.4.2) (2026-11-24)
+
+
+### Features
+
+* let spec files hold near-copies of each other ([#6](https://github.com/kindlingai/tessera-stickler/issues/6)) ([0cb1846](https://github.com/kindlingai/tessera-stickler/commit/0cb18463e4c14b7be04ccebd643cd2db55b205c5))
+
+
+### Bug Fixes
+
+* **ci:** clear the cached tessera checkout before fetching ([ab547ba](https://github.com/kindlingai/tessera-stickler/commit/ab547ba5cc81297c057553b0879f9fa59593fbbb))
+
 ## [0.4.1](https://github.com/kindlingai/tessera-stickler/compare/v0.4.0...v0.4.1) (2026-11-24)
 
 
