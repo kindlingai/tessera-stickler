@@ -419,9 +419,9 @@ impl Repo {
                     if let syn::Item::Fn(f) = other
                         && let Some((name, kind)) = proc_macro(f)
                     {
-                        mods[at]
-                            .items
-                            .push(item(name, kind, file, f.sig.ident.span()));
+                        let mut found = item(name, kind, file, f.span());
+                        found.line = f.sig.ident.span().start().line;
+                        mods[at].items.push(found);
                     }
                     if let Some((id, kind)) = kind_of(other) {
                         let mut found = item(id.to_string(), kind, file, other.span());

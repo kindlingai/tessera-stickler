@@ -26,6 +26,8 @@ fn refuses_false_maps() {
     }
     let atlas = &mut Atlas::open(root).unwrap();
     assert_eq!(faults(atlas, GOOD), Vec::<String>::new());
+    let context = atlas.context("add-thing").unwrap();
+    assert!(context.contains("macro_rules! rule"), "{context}");
     let each =
         "}]\neach = [{ of = \"tessera_bundle::arch::ARCHES\", has = \"tessera_parity::Spec\" }]";
     let cases = [
