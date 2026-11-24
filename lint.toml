@@ -51,6 +51,9 @@ similar_allow = "crates/simcheck/allow.toml"
 style.rules = "crates/style/rules"
 style.tags = "crates/style/tags.txt"
 
+# Run the crate-name clash audit over tessera-publish merge groups.
+publish_groups = false
+
 # File types the rules read.
 extensions = ["rs", "metal", "cu", "cuh", "h", "hpp", "c", "cc", "cpp", "wgsl", "hip", "kernel"]
 
@@ -60,27 +63,19 @@ hash_comment_files = ["*.toml", "*.yml", "*.yaml", "*.sh", ".githooks/*"]
 # File types the repository may hold, as `hash_comment_files` patterns.
 # The code is pure Rust, apart from GPU kernels.
 file_types = [
-    "*.rs", "*.metal", "*.cu", "*.cuh", "*.h", "*.kernel",
-    "*.toml", "*.lock", "*.md", "*.txt", "*.json", "*.yml", "*.yaml",
-    "*.sh", ".githooks/*", ".gitignore", "LICENSE",
-    "tools/inspect/src/page.css", "tools/inspect/src/pump.js", "tools/publish/npm/tesserax.js",
+    "*.rs", "*.toml", "*.lock", "*.md", "*.txt", "*.json", "*.yml", "*.yaml",
+    ".gitignore", "LICENSE",
 ]
 
 # Files outside `file_types`. Each needs a maintainer's approval and a reason.
-file_type_exceptions = [
-    { path = "tools/parity/reference.py", reason = """\
-The golden tests compare tessera with a reference from Hugging Face Transformers. \
-The reference must come from an implementation outside tessera, and Transformers is Python. \
-So this writer cannot be Rust.""" },
-]
+file_type_exceptions = []
 
 # Rules that report in the findings and do not fail the run.
 warn_rules = ["thin-edge", "placement", "type-copy"]
 
 # Types with the same members in two crates that are not one concept.
 allowed_type_copies = [
-    ["tools/findings/src/lib.rs::Snippet", "tools/simcheck/src/windows.rs::Window"],
-    ["engine/settings/src/lib.rs::Pick", "engine/plan/sim/src/zone.rs::ZoneKind"],
+    ["crates/findings/src/lib.rs::Snippet", "crates/simcheck/src/windows.rs::Window"],
 ]
 
 # Statements in a function body before a copy elsewhere counts.
@@ -93,10 +88,7 @@ repeat_exprs = { min_tokens = 24, min_paths = 2, min_places = 3 }
 # Kernel text belongs in the DSL. Strings outside `allow` and test
 # files may not hold `tokens`.
 kernel_text.tokens = ["f_fn", "f_const(", "{{\\n"]
-kernel_text.allow = [
-    "engine/plan/codegen/src/dialect.rs",
-    "engine/plan/codegen/src/intrinsic.rs",
-]
+kernel_text.allow = []
 
 # Test files here may time code. Other test files may not.
 timing_exempt = ["tools/calibrate/"]
@@ -104,30 +96,21 @@ timing_exempt = ["tools/calibrate/"]
 # Crate directories by layer, lowest first. A crate may depend on its own
 # layer or a lower one, dev-dependencies included.
 layers = [
-    ["engine/ir/"],
-    ["engine/gpu/", "engine/settings/"],
-    ["engine/plan/sim/", "engine/plan/kernel-macro/"],
-    ["engine/plan/codegen/"],
-    ["engine/plan/lower/", "engine/plan/comm/", "engine/plan/host/"],
-    ["engine/plan/jit/"],
-    ["engine/plan/run/"],
-    ["engine/rules/"],
-    ["engine/engine/", "engine/models/"],
-    ["frontend/"],
-    ["tools/"],
-    ["examples/"],
+    ["crates/findings/", "crates/shape/"],
+    ["crates/lint/", "crates/simcheck/", "crates/style/"],
+    ["crates/check/"],
+    ["crates/stickler/"],
 ]
 
-
 # Crates in `dir` may name only `crates` and each other in normal dependencies.
-facade = { dir = "frontend/", crates = ["tessera-engine"] }
+facade = { dir = "crates/stickler/", crates = ["stickler-check", "stickler-lint", "stickler-simcheck", "stickler-style"] }
 
 # A note for a crate whose dependencies all sit this many layers
-# below it. The `engine/plan/` crates fill five layers, so 2 is too few.
-placement_gap = 4
+# below it.
+placement_gap = 3
 
 # Crates in `dirs` name at least `min_names` top-level names of each
 # workspace dependency, or `min_dev_names` of a dev-dependency.
 # Dependencies in the lowest layer, or whose names other crates use
 # fewer than `min_surface` of, pass. `use a as _` links and passes.
-thin_edge = { dirs = ["engine/"], min_names = 3, min_dev_names = 1, min_surface = 6 }
+thin_edge = { dirs = ["crates/"], min_names = 3, min_dev_names = 1, min_surface = 6 }

@@ -89,7 +89,7 @@ pub fn pairs(wins: &[Window], embs: &[Vec<f32>], crates: &[String]) -> Vec<Pair>
 }
 
 /// The larger share of one crate leaning to the other.
-pub fn pull(p: &Pair) -> f32 {
+pub(crate) fn pull(p: &Pair) -> f32 {
     let a = p.leans.0 as f32 / p.sizes.0 as f32;
     a.max(p.leans.1 as f32 / p.sizes.1 as f32)
 }

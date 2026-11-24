@@ -86,7 +86,7 @@ fn all_windows(root: &Path, s: &Settings) -> Result<Vec<Window>> {
         let Ok(text) = std::fs::read_to_string(root.join(path)) else {
             continue;
         };
-        // Both sides of a conflict match. stickler lint reports the file.
+        // Both sides of a conflict match. Lint reports the file.
         if stickler_shape::conflict(&text).is_some() {
             continue;
         }

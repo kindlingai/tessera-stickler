@@ -34,7 +34,7 @@ use std::process::ExitCode;
 
 /// The limits in lint.toml at the repository root.
 #[derive(serde::Deserialize)]
-pub struct Limits {
+pub(crate) struct Limits {
     pub max_comment_words: usize,
     pub max_description_words: usize,
     pub max_name_segments: usize,
@@ -66,14 +66,15 @@ pub struct Limits {
     #[serde(default)]
     pub allowed_type_copies: Vec<Vec<String>>,
     pub kernel_text: text::Config,
+    pub publish_groups: bool,
 }
 
-pub static CONFIG: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
+pub(crate) static CONFIG: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
     let path = files::repo_root().join("lint.toml");
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 });
 
-pub static LIMITS: std::sync::LazyLock<Limits> = std::sync::LazyLock::new(|| {
+pub(crate) static LIMITS: std::sync::LazyLock<Limits> = std::sync::LazyLock::new(|| {
     toml::from_str(&CONFIG).unwrap_or_else(|e| panic!("lint.toml: {e}"))
 });
 
@@ -208,7 +209,7 @@ fn check_file(
     comments::check(src, is_rust, out);
     if is_rust {
         rust::check(src, out, names, tests);
-        text::check(src, out);
+        text::check(src, &LIMITS.kernel_text, out);
     } else {
         kernel::check(src, names);
     }

@@ -73,7 +73,7 @@ fn element(el: &str) -> Result<String, String> {
 }
 
 /// A pattern as a regex. Matches start at token starts.
-pub fn compile(pattern: &str) -> Result<Regex, String> {
+pub(crate) fn compile(pattern: &str) -> Result<Regex, String> {
     let body: Result<String, String> = pattern.split_whitespace().map(element).collect();
     let re = format!("(?<![^ ]){}", body?);
     Regex::new(&re).map_err(|e| format!("{pattern}: {e}"))

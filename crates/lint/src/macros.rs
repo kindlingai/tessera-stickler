@@ -10,7 +10,7 @@ use crate::rust::lines_of;
 use crate::{LIMITS, Violation};
 
 /// Counts `name!` invocations in a token stream, by name.
-pub fn calls(tokens: TokenStream, counts: &mut BTreeMap<String, usize>) {
+pub(crate) fn calls(tokens: TokenStream, counts: &mut BTreeMap<String, usize>) {
     let mut prev: Option<String> = None;
     for t in tokens {
         match t {

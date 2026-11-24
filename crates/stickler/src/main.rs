@@ -1,4 +1,4 @@
-//! One program for every check: `stickler <tool> ...` or a check command.
+//! Runs one tool, or a check command.
 
 use std::process::ExitCode;
 

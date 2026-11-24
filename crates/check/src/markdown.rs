@@ -98,7 +98,7 @@ fn section(out: &mut String, r: &Report, links: Option<&str>) -> std::fmt::Resul
     writeln!(out, "\n</details>")
 }
 
-pub fn render(reports: &[Report], links: Option<&str>) -> Result<String, std::fmt::Error> {
+pub(crate) fn render(reports: &[Report], links: Option<&str>) -> Result<String, std::fmt::Error> {
     let mut out = format!("{MARKER}\n### Checks\n\n");
     if reports.iter().all(|r| r.findings.is_empty()) {
         out.push_str("None found.\n\n");
