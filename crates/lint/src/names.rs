@@ -14,7 +14,7 @@ pub struct Name {
 }
 
 /// Snake-case pieces, ignoring leading or doubled underscores.
-pub fn pieces(name: &str) -> Vec<&str> {
+pub(crate) fn pieces(name: &str) -> Vec<&str> {
     let name = name.strip_prefix("r#").unwrap_or(name);
     name.split('_').filter(|s| !s.is_empty()).collect()
 }
@@ -32,7 +32,7 @@ fn in_family(name: &str, crate_names: &[&str]) -> bool {
 }
 
 /// Why `name` breaks the rule, if it does.
-pub fn fault(name: &str, crate_names: &[&str]) -> Option<String> {
+pub(crate) fn fault(name: &str, crate_names: &[&str]) -> Option<String> {
     let n = pieces(name).len();
     let (base, family) = (LIMITS.max_name_segments, LIMITS.max_family_segments);
     if n <= base {

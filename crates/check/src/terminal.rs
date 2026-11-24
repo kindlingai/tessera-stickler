@@ -15,7 +15,7 @@ impl Paint {
     }
 }
 
-pub fn render(reports: &[Report], color: bool) -> String {
+pub(crate) fn render(reports: &[Report], color: bool) -> String {
     let p = Paint(color);
     let mut out = String::new();
     for r in reports {

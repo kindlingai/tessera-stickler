@@ -28,13 +28,13 @@ pub struct Raw {
 
 /// A comment, as the rule counts words.
 #[derive(Debug, PartialEq, Eq)]
-pub struct Comment {
+pub(crate) struct Comment {
     pub line: usize,
     pub words: usize,
 }
 
 /// A `;` outside backtick spans.
-pub fn prose_semicolon(body: &str) -> bool {
+pub(crate) fn prose_semicolon(body: &str) -> bool {
     let mut code = false;
     for c in body.chars() {
         match c {
@@ -240,12 +240,12 @@ pub fn scan(text: &str, rust: bool) -> Vec<Raw> {
 }
 
 /// The text with every comment blanked out, line numbers kept.
-pub fn strip(text: &str, rust: bool) -> String {
+pub(crate) fn strip(text: &str, rust: bool) -> String {
     String::from_utf8_lossy(&scanner(text, rust).stripped).into_owned()
 }
 
 /// Adjacent whole-line comments of one kind count as one.
-pub fn group(raw: &[Raw]) -> Vec<Comment> {
+pub(crate) fn group(raw: &[Raw]) -> Vec<Comment> {
     let mut out: Vec<Comment> = Vec::new();
     let mut prev: Option<&Raw> = None;
     for r in raw {
@@ -269,7 +269,7 @@ pub fn group(raw: &[Raw]) -> Vec<Comment> {
 }
 
 /// Lines of comments with a `;` outside code spans and blocks.
-pub fn semicolons(raw: &[Raw]) -> Vec<usize> {
+pub(crate) fn semicolons(raw: &[Raw]) -> Vec<usize> {
     let mut block = false;
     let mut prev: Option<&Raw> = None;
     let mut out = Vec::new();
@@ -289,7 +289,7 @@ pub fn semicolons(raw: &[Raw]) -> Vec<usize> {
 }
 
 /// The text after each `#` that starts a comment, by line.
-pub fn hash_comments(text: &str) -> Vec<(usize, &str)> {
+pub(crate) fn hash_comments(text: &str) -> Vec<(usize, &str)> {
     let mut out = Vec::new();
     for (i, line) in text.lines().enumerate() {
         if i == 0 && line.starts_with("#!") {
@@ -312,9 +312,9 @@ pub fn hash_comments(text: &str) -> Vec<(usize, &str)> {
     out
 }
 
-pub const SEMICOLON: &str = "`;` in prose: split the sentence, or quote code in backticks";
+pub(crate) const SEMICOLON: &str = "`;` in prose: split the sentence, or quote code in backticks";
 
-pub fn check_hash(src: &Source, out: &mut Vec<Violation>) {
+pub(crate) fn check_hash(src: &Source, out: &mut Vec<Violation>) {
     for (line, body) in hash_comments(&src.text) {
         if prose_semicolon(body) {
             out.push(src.violation(line, "comment-semicolon", SEMICOLON.into()));

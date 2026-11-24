@@ -144,7 +144,7 @@ pub fn check(sources: &[Source], out: &mut Vec<Violation>) {
 
 /// Limits of the repeated-expr rule, from lint.toml.
 #[derive(serde::Deserialize)]
-pub struct Exprs {
+pub(crate) struct Exprs {
     pub min_tokens: usize,
     /// Names after `::`, such as enum variants.
     pub min_paths: usize,
@@ -206,7 +206,7 @@ impl<'ast> Visit<'ast> for Walk<'_> {
 }
 
 /// Matches and closures of the same shape in `min_places` places.
-pub fn exprs(sources: &[Source], limits: &Exprs, out: &mut Vec<Violation>) {
+pub(crate) fn exprs(sources: &[Source], limits: &Exprs, out: &mut Vec<Violation>) {
     let mut found = Vec::new();
     for src in sources
         .iter()

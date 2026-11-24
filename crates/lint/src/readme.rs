@@ -9,7 +9,7 @@ use crate::{LIMITS, Violation};
 pub const MARKER: &str = "<!-- crate table -->";
 
 /// A crate's directory, with its name and description.
-pub struct Crate {
+pub(crate) struct Crate {
     pub dir: String,
     pub name: String,
     pub description: String,
@@ -38,7 +38,7 @@ fn read_crate(root: &Path, dir: &str) -> Result<Crate, String> {
 }
 
 /// Each folder above a crate, with the crates below it.
-pub fn folders(crates: &[Crate]) -> BTreeMap<String, Vec<&Crate>> {
+pub(crate) fn folders(crates: &[Crate]) -> BTreeMap<String, Vec<&Crate>> {
     let mut out: BTreeMap<String, Vec<&Crate>> = BTreeMap::new();
     for c in crates {
         let parts: Vec<&str> = c.dir.trim_end_matches('/').split('/').collect();
@@ -69,7 +69,7 @@ fn indent(depth: usize) -> String {
 }
 
 /// `folder`'s crates as a folder tree, then name and description.
-pub fn table(folder: &str, crates: &[&Crate]) -> String {
+pub(crate) fn table(folder: &str, crates: &[&Crate]) -> String {
     let mut sorted: Vec<(Vec<&str>, &Crate)> = Vec::new();
     for c in crates {
         let rel = c.dir[folder.len()..].trim_end_matches('/');
@@ -117,7 +117,7 @@ fn table_len(text: &str) -> usize {
 }
 
 /// `text` with the table after its marker replaced.
-pub fn splice(text: &str, table: &str) -> Option<String> {
+pub(crate) fn splice(text: &str, table: &str) -> Option<String> {
     let at = text.find(MARKER)?;
     let body = at + MARKER.len();
     let body = body + text[body..].find('\n').map_or(text.len() - body, |n| n + 1);

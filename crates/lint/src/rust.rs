@@ -67,7 +67,7 @@ impl<'ast> Visit<'ast> for PathMods {
 }
 
 /// `#[test]`, `#[tokio::test]` and `#[cfg(test)]` style attributes.
-pub fn is_test(attr: &Attribute) -> bool {
+pub(crate) fn is_test(attr: &Attribute) -> bool {
     let path = attr.path();
     if path.segments.last().is_some_and(|s| s.ident == "test") {
         return true;
@@ -89,7 +89,7 @@ fn has_test(tokens: TokenStream) -> bool {
     })
 }
 
-pub fn attrs_of(item: &Item) -> &[Attribute] {
+pub(crate) fn attrs_of(item: &Item) -> &[Attribute] {
     match item {
         Item::Const(i) => &i.attrs,
         Item::Enum(i) => &i.attrs,
@@ -107,7 +107,7 @@ pub fn attrs_of(item: &Item) -> &[Attribute] {
 }
 
 /// Lines of inline test items, and the first such line.
-pub fn test_lines(items: &[Item]) -> (usize, Option<usize>) {
+pub(crate) fn test_lines(items: &[Item]) -> (usize, Option<usize>) {
     let (mut total, mut first) = (0, None);
     for item in items {
         let inline_test = attrs_of(item).iter().any(is_test);
@@ -148,7 +148,7 @@ fn test_fns(items: &[Item]) -> usize {
 }
 
 /// Files named `*test.rs` hold tests and fixtures.
-pub fn is_test_file(path: &str) -> bool {
+pub(crate) fn is_test_file(path: &str) -> bool {
     Path::new(path)
         .file_stem()
         .and_then(|s| s.to_str())
@@ -214,7 +214,7 @@ fn walk(tokens: TokenStream, lo: &mut usize, hi: &mut usize) {
 }
 
 /// First and last source line of a syntax node.
-pub fn lines_of(node: &impl ToTokens) -> (usize, usize) {
+pub(crate) fn lines_of(node: &impl ToTokens) -> (usize, usize) {
     let (mut lo, mut hi) = (usize::MAX, 0);
     walk(node.to_token_stream(), &mut lo, &mut hi);
     (lo, hi.max(lo))

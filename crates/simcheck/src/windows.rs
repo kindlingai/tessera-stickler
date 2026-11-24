@@ -41,7 +41,7 @@ fn winnow(hashes: &[u64], w: usize) -> Vec<usize> {
 }
 
 /// Windows at anchors about `spacing` apart, plus both file ends.
-pub fn cut(path: &str, text: &str, window: usize, spacing: usize) -> Vec<Window> {
+pub(crate) fn cut(path: &str, text: &str, window: usize, spacing: usize) -> Vec<Window> {
     let lines: Vec<&str> = text.lines().map(str::trim).collect();
     let Some(last) = lines.len().checked_sub(window) else {
         return Vec::new();
@@ -69,6 +69,6 @@ pub fn cut(path: &str, text: &str, window: usize, spacing: usize) -> Vec<Window>
 }
 
 /// Whether two windows share lines of one file.
-pub fn overlap(a: &Window, b: &Window, window: usize) -> bool {
+pub(crate) fn overlap(a: &Window, b: &Window, window: usize) -> bool {
     a.path == b.path && a.line.abs_diff(b.line) < window
 }
