@@ -2,7 +2,6 @@ use crate::diff::Hunk;
 use crate::rules::Rule;
 use crate::{Checker, paths};
 use fancy_regex::Regex;
-use std::path::Path;
 
 /// Each of a rule's examples, and whether it should hit.
 fn cases(rule: &Rule) -> Vec<(String, bool)> {
