@@ -1,0 +1,19 @@
+Replacement paths, by crate name.
+---
+The rule reading a weight owns its views.
+---
+The caller frees them after the launch.
+---
+Paths that replace crate names.
+---
+Selects kernels, orders them, then assigns buffers.
+---
+The interpreter reads weights in the form's packed layout.
+---
+One string, or a list of strings.
+---
+Reads the header and checks it against the size.
+---
+It returns the first match.
+---
+The pool holds the rows, and the plan reads it once.

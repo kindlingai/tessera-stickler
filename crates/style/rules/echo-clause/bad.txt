@@ -1,0 +1,25 @@
+Crate names and the paths that replace them.
+---
+Counters and gauges, gathered from the code that sets them.
+---
+Weight views belong to the rules that read them.
+---
+Kernel names that outlive the forms that made them.
+---
+The interpreter sees the weights as the form keeps them.
+---
+Kept rows span the whole context, as buffers hold them.
+---
+`n` pictures, `size` a side. A seed repeats them.
+---
+One string or a list of them.
+---
+The token tree and the tokenizer, as llguidance reads them.
+---
+The kept rows' pool, and how prompts met it.
+---
+Calls `f` with an int to fill, then checks it.
+---
+Ids that end the answer, left out of it.
+---
+`hipDeviceAttribute_t`, as HIP 6 and 7 number it.

@@ -1,0 +1,133 @@
+# The rules stickler applies to this repository.
+
+# Words in one comment block. Adjacent comment lines are one block.
+max_comment_words = 10
+# Words in a crate's `description`. The semicolon rule reads it too.
+max_description_words = 12
+# A `;` in a comment must sit in backticks or a ``` block.
+# This also covers `#` comments in `hash_comment_files`.
+
+# Snake-case segments in a function name, and when a shared prefix
+# or suffix lets a name go one longer.
+max_name_segments = 3
+max_family_segments = 4
+
+max_file_lines = 1000
+
+# Source files per crate: a base, plus more for each source
+# directory beyond the first. macros/ directories do not count.
+max_crate_files_base = 25
+max_crate_files_addl_module = 3
+max_crate_lines = 15000
+
+# Per language in a crate's macros/ directory, outside the crate limits.
+max_macro_files = 5
+min_macro_calls = 2
+
+# Share of a file inline tests may fill, in percent.
+max_test_percent = 1
+
+# The percent of a module plus its tests that #[test] fns fill.
+# Unpaired test files count against the rest of their crate.
+max_module_test_percent = 25
+
+# Steps of non-blank lines in a run of line shapes, and the most
+# places one run that long may appear in files of one type.
+# Shapes collapse names and numbers. Struct fields keep their names.
+shape_steps = [[10, 3], [20, 2], [40, 1]]
+
+# tools/simcheck starts windows of lines at anchors its content picks,
+# about `similar_spacing` apart. Windows fail at `max_similarity` cosine.
+similar_window = 20
+similar_spacing = 7
+max_similarity = 0.97
+# A new file nearer another crate than its own by this
+# much gets a note in the pull request. It does not fail.
+max_lean = 0.03
+# Pairs of files that may be near-copies.
+similar_allow = "crates/simcheck/allow.toml"
+
+# Style rule files and the tag patterns they use.
+style.rules = "crates/style/rules"
+style.tags = "crates/style/tags.txt"
+
+# File types the rules read.
+extensions = ["rs", "metal", "cu", "cuh", "h", "hpp", "c", "cc", "cpp", "wgsl", "hip", "kernel"]
+
+# Files with `#` comments, read by the semicolon rule alone.
+hash_comment_files = ["*.toml", "*.yml", "*.yaml", "*.sh", ".githooks/*"]
+
+# File types the repository may hold, as `hash_comment_files` patterns.
+# The code is pure Rust, apart from GPU kernels.
+file_types = [
+    "*.rs", "*.metal", "*.cu", "*.cuh", "*.h", "*.kernel",
+    "*.toml", "*.lock", "*.md", "*.txt", "*.json", "*.yml", "*.yaml",
+    "*.sh", ".githooks/*", ".gitignore", "LICENSE",
+    "tools/inspect/src/page.css", "tools/inspect/src/pump.js", "tools/publish/npm/tesserax.js",
+]
+
+# Files outside `file_types`. Each needs a maintainer's approval and a reason.
+file_type_exceptions = [
+    { path = "tools/parity/reference.py", reason = """\
+The golden tests compare tessera with a reference from Hugging Face Transformers. \
+The reference must come from an implementation outside tessera, and Transformers is Python. \
+So this writer cannot be Rust.""" },
+]
+
+# Rules that report in the findings and do not fail the run.
+warn_rules = ["thin-edge", "placement", "type-copy"]
+
+# Types with the same members in two crates that are not one concept.
+allowed_type_copies = [
+    ["tools/findings/src/lib.rs::Snippet", "tools/simcheck/src/windows.rs::Window"],
+    ["engine/settings/src/lib.rs::Pick", "engine/plan/sim/src/zone.rs::ZoneKind"],
+]
+
+# Statements in a function body before a copy elsewhere counts.
+min_repeat_statements = 4
+
+# A `match` or closure with `min_tokens` tokens and `min_paths` names after
+# `::` fails when its shape, names collapsed, is in `min_places` places.
+repeat_exprs = { min_tokens = 24, min_paths = 2, min_places = 3 }
+
+# Kernel text belongs in the DSL. Strings outside `allow` and test
+# files may not hold `tokens`.
+kernel_text.tokens = ["f_fn", "f_const(", "{{\\n"]
+kernel_text.allow = [
+    "engine/plan/codegen/src/dialect.rs",
+    "engine/plan/codegen/src/intrinsic.rs",
+]
+
+# Test files here may time code. Other test files may not.
+timing_exempt = ["tools/calibrate/"]
+
+# Crate directories by layer, lowest first. A crate may depend on its own
+# layer or a lower one, dev-dependencies included.
+layers = [
+    ["engine/ir/"],
+    ["engine/gpu/", "engine/settings/"],
+    ["engine/plan/sim/", "engine/plan/kernel-macro/"],
+    ["engine/plan/codegen/"],
+    ["engine/plan/lower/", "engine/plan/comm/", "engine/plan/host/"],
+    ["engine/plan/jit/"],
+    ["engine/plan/run/"],
+    ["engine/rules/"],
+    ["engine/engine/", "engine/models/"],
+    ["frontend/"],
+    ["tools/"],
+    ["examples/"],
+]
+
+
+# Crates in `dir` may name only `crates` and each other in normal dependencies.
+facade = { dir = "frontend/", crates = ["tessera-engine"] }
+
+# A note for a crate whose dependencies all sit this many layers
+# below it. The `engine/plan/` crates fill five layers, so 2 is too few.
+placement_gap = 4
+
+# Crates in `dirs` name at least `min_names` top-level names of each
+# workspace dependency, or `min_dev_names` of a dev-dependency.
+# Dependencies in the lowest layer, or whose names other crates use
+# fewer than `min_surface` of, pass. `use a as _` links and passes.
+thin_edge = { dirs = ["engine/"], min_names = 3, min_dev_names = 1, min_surface = 6 }

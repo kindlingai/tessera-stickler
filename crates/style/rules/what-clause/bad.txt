@@ -1,0 +1,7 @@
+What a launch feeds before its picks.
+---
+What the kernel needs: device addresses and the round.
+---
+What runs the graph.
+---
+What to favor, bar and pin when lowering a model.

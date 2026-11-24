@@ -1,0 +1,117 @@
+# Runs release-please on pushes to main to maintain a Release PR.
+# When a Release PR merges, release-please cuts the vX.Y.Z tag and
+# GitHub Release, then this workflow builds one stickler zip per
+# platform and uploads the zips and SHA256SUMS to the release.
+# A manual run rebuilds the assets for an existing tag.
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version, with or without leading v
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.event_name == 'push' && 'release-please' || format('release-dispatch-{0}', github.run_id) }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      run: ${{ steps.v.outputs.run }}
+      tag: ${{ steps.v.outputs.tag }}
+    env:
+      HAS_APP: ${{ secrets.RELEASE_PLEASE_APP_ID != '' && secrets.RELEASE_PLEASE_APP_PRIVATE_KEY != '' }}
+    steps:
+      - id: app-token
+        if: github.event_name == 'push' && env.HAS_APP == 'true'
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_APP_PRIVATE_KEY }}
+      - id: rp
+        if: github.event_name == 'push'
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # Mint a GitHub App token when configured so Release PRs trigger CI.
+          token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - id: v
+        if: github.event_name == 'workflow_dispatch' || steps.rp.outputs.release_created == 'true'
+        env:
+          RP_TAG: ${{ steps.rp.outputs.tag_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          raw="${RP_TAG:-$INPUT_VERSION}"
+          v="${raw#v}"
+          if ! [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::not a version: $raw"
+            exit 1
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+          echo "tag=v$v" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: release
+    if: needs.release.outputs.run == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, platform: linux-x64 }
+          - { os: ubuntu-24.04-arm, platform: linux-arm64 }
+          - { os: macos-15, platform: darwin-arm64 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: dtolnay/rust-toolchain@1.99.1
+      - run: cargo build --release --locked
+      - name: Zip the binary
+        run: |
+          set -euo pipefail
+          ./target/release/stickler 2>&1 | grep -q usage
+          mkdir -p dist
+          (cd target/release && zip -q "$GITHUB_WORKSPACE/dist/stickler-${{ matrix.platform }}.zip" stickler)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zip-${{ matrix.platform }}
+          path: dist/stickler-${{ matrix.platform }}.zip
+
+  upload:
+    needs: [release, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: zip-*
+          merge-multiple: true
+          path: dist
+      - name: Upload the zips and checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum stickler-*.zip > SHA256SUMS
+          cat SHA256SUMS
+          gh release upload "$TAG" stickler-*.zip SHA256SUMS --clobber

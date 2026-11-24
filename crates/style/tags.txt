@@ -1,0 +1,20 @@
+# Part-of-speech patterns: `<rule>: <pattern>`, over `word/TAG ` tokens.
+# An element is `<Class|Class>`, a word, `(a|b)`, `!<Class>` for a token
+# that must not follow, or `^` for the sentence start. A `*`, `+` or `?`
+# may follow. Classes are in src/pattern.rs.
+agent-passive: <Be> <Adverb>* !<Arith> <Verb-PastParticiple> by <Det>* <Adj>* !<Action> !<Identifier> <Noun>
+hidden-negation: <ContentVerb> <Adverb>? no <Adj>* <Noun>
+hidden-negation: ^ only <Det>* <Adj|Noun|Possessive|Hyphen>* <Noun> <Adverb>? <Verb-Finite>
+chained-clause: <Verb|Prep> <Word>*? <Noun> , (which|whose|who) !<Be>
+echo-clause: <Noun> (that|which) <Adverb>? <Verb> <Prep>? (them|it) !<Verb>
+echo-clause: as <Det>* <Adj|Noun|Possessive>* <Noun> <Num|Conj|Noun>* <Adverb>? <Verb-Finite>? <Adverb>? <Verb|Noun> (them|it) !<Verb>
+echo-clause: <Noun> of (them|it)
+echo-clause: ^ <Det>? <Adj|Noun>* <Noun> <Adverb>? <Verb-Finite>? <Adverb>? <Verb> (them|it) (.)
+echo-clause: (out) of it
+echo-clause: how <Det>* <Adj|Noun>* <Noun> <Adverb>? <Verb> (them|it)
+echo-clause: then <Adverb>? <Verb> (them|it) (.)
+what-clause: ^ what
+end-verb: (holds|takes|carries) (.)
+end-verb: !<Noun> (hold|take|carry) (.)
+hidden-negation: ^ no <Adj|Noun>* <Noun> <Adverb>? !<Be> <Verb-Finite>
+hidden-negation: !(unless) <Word> no <Adj|Noun>* <Noun> <Adverb>? !<Be> <Verb-Finite>
