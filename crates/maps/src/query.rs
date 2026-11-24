@@ -30,7 +30,7 @@ fn place(items: &Result<Vec<crate::Item>, String>) -> String {
 }
 
 impl Atlas {
-    fn task(&self, id: &str) -> Result<&Map, String> {
+    pub(crate) fn task(&self, id: &str) -> Result<&Map, String> {
         self.maps
             .iter()
             .find(|m| m.id == id)
@@ -123,25 +123,29 @@ impl Atlas {
     pub fn digest(&self) -> String {
         let mut out = String::new();
         for map in &self.maps {
-            let mut text = map.id.clone();
-            for step in &map.task.steps {
-                let s = step.get_ref();
-                let _ = write!(text, "|{}:{:?}", s.verb.name(), s.mode);
-                for (field, value, got) in self.refs(s) {
-                    let mut files: Vec<String> = got
-                        .unwrap_or_default()
-                        .into_iter()
-                        .map(|it| it.file)
-                        .collect();
-                    files.sort();
-                    let _ = write!(text, ",{field}={value}>{}", files.join("+"));
-                }
-            }
-            for e in &map.task.each {
-                let _ = write!(text, "|each:{}:{}", e.get_ref().of, e.get_ref().has);
-            }
-            let _ = writeln!(out, "{} {:016x}", map.id, fnv(&text));
+            let _ = writeln!(out, "{} {:016x}", map.id, self.digest_of(map));
         }
         out
+    }
+
+    pub(crate) fn digest_of(&self, map: &Map) -> u64 {
+        let mut text = map.id.clone();
+        for step in &map.task.steps {
+            let s = step.get_ref();
+            let _ = write!(text, "|{}:{:?}", s.verb.name(), s.mode);
+            for (field, value, got) in self.refs(s) {
+                let mut files: Vec<String> = got
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(|it| it.file)
+                    .collect();
+                files.sort();
+                let _ = write!(text, ",{field}={value}>{}", files.join("+"));
+            }
+        }
+        for e in &map.task.each {
+            let _ = write!(text, "|each:{}:{}", e.get_ref().of, e.get_ref().has);
+        }
+        fnv(&text)
     }
 }

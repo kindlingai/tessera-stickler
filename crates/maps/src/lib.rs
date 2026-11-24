@@ -2,6 +2,7 @@
 
 mod calls;
 mod code;
+mod context;
 mod map;
 mod query;
 mod registry;
@@ -165,8 +166,7 @@ pub fn check(root: &Path) -> Result<Vec<Fault>, String> {
     Ok(Atlas::open(root)?.check())
 }
 
-const USAGE: &str =
-    "usage: stickler maps [check | show <task> | cites <path> | registries | digest]";
+const USAGE: &str = "usage: stickler maps [check | show <task> | context <task> | cites <path> | registries | digest]";
 
 pub fn main(args: &[&str]) -> ExitCode {
     stickler_findings::main_of("stickler maps", run, args)
@@ -187,6 +187,7 @@ fn run(args: &[&str]) -> Result<bool, String> {
     let out = match args {
         [] | ["check"] => return Ok(faults.is_empty()),
         ["show", id] => atlas.show(id)?,
+        ["context", id] => atlas.context(id)?,
         ["cites", path] => atlas.cites(path),
         ["registries"] => atlas.inventory(),
         ["digest"] => atlas.digest(),
