@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.1](https://github.com/kindlingai/tessera-stickler/compare/v0.4.0...v0.4.1) (2026-11-24)
+
+
+### Features
+
+* **maps:** port the task-map checker from tessera ([#4](https://github.com/kindlingai/tessera-stickler/issues/4)) ([0075642](https://github.com/kindlingai/tessera-stickler/commit/00756422bd642a3fde9c7d8834aa45162d4d681b))
+
+
+### Bug Fixes
+
+* **release:** accept the usage exit code in the smoke check ([c74c684](https://github.com/kindlingai/tessera-stickler/commit/c74c684a4fcdcdac98ba9bccda6813f8c4b3ccd4))
+
 ## [0.4.0](https://github.com/kindlingai/tessera-stickler/compare/v0.3.0...v0.4.0) (2026-11-24)
 
 
