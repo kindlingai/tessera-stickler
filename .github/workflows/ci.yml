@@ -28,3 +28,5 @@ jobs:
       - run: cargo nextest run --workspace --locked
       - run: cargo build --release --locked
       - run: ./target/release/stickler 2>&1 | grep -q usage
+      # stickler checks this repository with its own rules.
+      - run: ./target/release/stickler lint

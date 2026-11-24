@@ -68,7 +68,9 @@ pub fn check(
     layers::placement(&pkgs, &LIMITS.layers, LIMITS.placement_gap, out);
     deps::check(&pkgs, sources, &LIMITS.layers[0], &LIMITS.thin_edge, out);
     unused::check(dirs, sources, out);
-    clashes(dirs, &merged(root)?, sources, out);
+    if LIMITS.publish_groups {
+        clashes(dirs, &merged(root)?, sources, out);
+    }
     suite::check(&pkgs, sources, out);
     repeats::check(sources, out);
     repeats::exprs(sources, &LIMITS.repeat_exprs, out);

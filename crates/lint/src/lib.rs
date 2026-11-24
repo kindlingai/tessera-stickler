@@ -66,6 +66,7 @@ pub struct Limits {
     #[serde(default)]
     pub allowed_type_copies: Vec<Vec<String>>,
     pub kernel_text: text::Config,
+    pub publish_groups: bool,
 }
 
 pub static CONFIG: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {

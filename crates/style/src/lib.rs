@@ -25,7 +25,7 @@ const USAGE: &str = "usage: stickler style fetch <pipeline_dir>
 `diff` and `staged` check added lines. `message` checks a commit message.
 Each command fails on any hit.";
 
-/// The `style` keys in lint.toml: the rules and their tag patterns.
+/// lint.toml `style` keys: rule and tag files.
 #[derive(serde::Deserialize)]
 struct Paths {
     rules: String,
