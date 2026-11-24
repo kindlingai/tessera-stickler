@@ -214,7 +214,7 @@ pub fn item(name: String, kind: Kind, file: &str, span: proc_macro2::Span) -> It
 }
 
 /// `*` matches within one path segment.
-pub fn glob(pattern: &str, path: &str) -> bool {
+pub(crate) fn glob(pattern: &str, path: &str) -> bool {
     fn seg(p: &[u8], s: &[u8]) -> bool {
         match (p.first(), s.first()) {
             (None, None) => true,

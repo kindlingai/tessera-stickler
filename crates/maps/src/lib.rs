@@ -56,7 +56,7 @@ pub struct Fault {
 }
 
 /// The maps, the workspace they cite and its registries.
-pub struct Atlas {
+pub(crate) struct Atlas {
     repo: Repo,
     inv: Inventory,
     maps: Vec<Map>,
