@@ -169,6 +169,14 @@ fn every_rule(root: &std::path::Path) -> Result<(Vec<Violation>, usize), String>
         comments::check_hash(src, &mut found);
     }
     readme::check(root, &dirs, &mut found)?;
+    for f in stickler_maps::check(root)? {
+        found.push(Violation {
+            path: f.path,
+            line: f.line,
+            rule: "map",
+            message: f.message,
+        });
+    }
     audit::check(root, &dirs, &sources, &mut found)?;
     Ok((found, sources.len()))
 }

@@ -9,5 +9,6 @@ publish.workspace = true
 [dependencies]
 stickler-check.workspace = true
 stickler-lint.workspace = true
+stickler-maps.workspace = true
 stickler-simcheck.workspace = true
 stickler-style.workspace = true

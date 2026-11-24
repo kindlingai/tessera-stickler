@@ -54,6 +54,11 @@ style.tags = "crates/style/tags.txt"
 # Run the crate-name clash audit over tessera-publish merge groups.
 publish_groups = false
 
+# Task maps: their folder and limits. Ids also use max_name_segments.
+maps_dir = "maps/"
+max_map_id_chars = 24
+max_map_steps = 12
+
 # File types the rules read.
 extensions = ["rs", "metal", "cu", "cuh", "h", "hpp", "c", "cc", "cpp", "wgsl", "hip", "kernel"]
 
@@ -97,13 +102,13 @@ timing_exempt = ["tools/calibrate/"]
 # layer or a lower one, dev-dependencies included.
 layers = [
     ["crates/findings/", "crates/shape/"],
-    ["crates/lint/", "crates/simcheck/", "crates/style/"],
+    ["crates/lint/", "crates/maps/", "crates/simcheck/", "crates/style/"],
     ["crates/check/"],
     ["crates/stickler/"],
 ]
 
 # Crates in `dir` may name only `crates` and each other in normal dependencies.
-facade = { dir = "crates/stickler/", crates = ["stickler-check", "stickler-lint", "stickler-simcheck", "stickler-style"] }
+facade = { dir = "crates/stickler/", crates = ["stickler-check", "stickler-lint", "stickler-maps", "stickler-simcheck", "stickler-style"] }
 
 # A note for a crate whose dependencies all sit this many layers
 # below it.
