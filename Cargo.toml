@@ -12,14 +12,15 @@ repository = "https://github.com/kindlingai/tessera-stickler"
 stickler-check = { path = "crates/check" }
 stickler-findings = { path = "crates/findings" }
 stickler-lint = { path = "crates/lint" }
+stickler-maps = { path = "crates/maps" }
 stickler-shape = { path = "crates/shape" }
 stickler-simcheck = { path = "crates/simcheck" }
 stickler-style = { path = "crates/style" }
 # One tessera revision for every tessera crate.
-tessera-frontend-settings = { git = "https://github.com/kindlingai/tessera", rev = "fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8" }
-tessera-publish = { git = "https://github.com/kindlingai/tessera", rev = "fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8" }
-tessera-tasks = { git = "https://github.com/kindlingai/tessera", rev = "fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8" }
-tessera-testkit = { git = "https://github.com/kindlingai/tessera", rev = "fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8" }
+tessera-frontend-settings = { git = "https://github.com/kindlingai/tessera", rev = "ad98139d7ec6b4717aa81b14bb4685f3fb34f173" }
+tessera-publish = { git = "https://github.com/kindlingai/tessera", rev = "ad98139d7ec6b4717aa81b14bb4685f3fb34f173" }
+tessera-tasks = { git = "https://github.com/kindlingai/tessera", rev = "ad98139d7ec6b4717aa81b14bb4685f3fb34f173" }
+tessera-testkit = { git = "https://github.com/kindlingai/tessera", rev = "ad98139d7ec6b4717aa81b14bb4685f3fb34f173" }
 
 [profile.release]
 lto = "thin"

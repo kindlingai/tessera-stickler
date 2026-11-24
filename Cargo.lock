@@ -1652,6 +1652,7 @@ version = "0.1.0"
 dependencies = [
  "stickler-check",
  "stickler-lint",
+ "stickler-maps",
  "stickler-simcheck",
  "stickler-style",
 ]
@@ -1682,9 +1683,21 @@ dependencies = [
  "serde",
  "serde_json",
  "stickler-findings",
+ "stickler-maps",
  "stickler-shape",
  "syn 2.0.119",
  "tessera-publish",
+ "toml",
+]
+
+[[package]]
+name = "stickler-maps"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "serde",
+ "stickler-findings",
+ "syn 2.0.119",
  "toml",
 ]
 
@@ -1785,7 +1798,7 @@ checksum = "8c447be3a2abfa84b2d91680c56600bd6b2873866de27b36ec911be705e291da"
 [[package]]
 name = "tessera-attention"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-codegen",
  "tessera-graph",
@@ -1795,7 +1808,7 @@ dependencies = [
 [[package]]
 name = "tessera-bundle"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "fancy-regex",
  "jiff",
@@ -1814,7 +1827,7 @@ dependencies = [
 [[package]]
 name = "tessera-checkpoint"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "serde",
  "serde_json",
@@ -1827,7 +1840,7 @@ dependencies = [
 [[package]]
 name = "tessera-codegen"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "scattered-collect",
  "tessera-engine-settings",
@@ -1840,7 +1853,7 @@ dependencies = [
 [[package]]
 name = "tessera-cpu"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-codegen",
  "tessera-lower",
@@ -1849,7 +1862,7 @@ dependencies = [
 [[package]]
 name = "tessera-device"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-engine-comm",
  "tessera-gpukit",
@@ -1862,12 +1875,12 @@ dependencies = [
 [[package]]
 name = "tessera-dl"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 
 [[package]]
 name = "tessera-engine"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "scattered-collect",
  "serde",
@@ -1890,7 +1903,7 @@ dependencies = [
 [[package]]
 name = "tessera-engine-comm"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-dl",
  "thiserror",
@@ -1899,7 +1912,7 @@ dependencies = [
 [[package]]
 name = "tessera-engine-settings"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "derive_more",
  "serde",
@@ -1908,7 +1921,7 @@ dependencies = [
 [[package]]
 name = "tessera-frontend-settings"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "envy",
  "serde",
@@ -1918,7 +1931,7 @@ dependencies = [
 [[package]]
 name = "tessera-gpukit"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "objc2",
  "objc2-foundation",
@@ -1933,7 +1946,7 @@ dependencies = [
 [[package]]
 name = "tessera-graph"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "derive_more",
  "serde",
@@ -1944,7 +1957,7 @@ dependencies = [
 [[package]]
 name = "tessera-guest"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "serde",
  "serde_json",
@@ -1953,7 +1966,7 @@ dependencies = [
 [[package]]
 name = "tessera-host"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-codegen",
  "tessera-graph",
@@ -1962,7 +1975,7 @@ dependencies = [
 [[package]]
 name = "tessera-interp"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-graph",
  "tessera-mem",
@@ -1972,7 +1985,7 @@ dependencies = [
 [[package]]
 name = "tessera-jit"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "cranelift-codegen",
  "cranelift-frontend",
@@ -1986,7 +1999,7 @@ dependencies = [
 [[package]]
 name = "tessera-kernel-macro"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1996,7 +2009,7 @@ dependencies = [
 [[package]]
 name = "tessera-kernels"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-codegen",
  "tessera-graph",
@@ -2007,7 +2020,7 @@ dependencies = [
 [[package]]
 name = "tessera-kv"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "thiserror",
 ]
@@ -2015,7 +2028,7 @@ dependencies = [
 [[package]]
 name = "tessera-linear"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-codegen",
  "tessera-graph",
@@ -2026,7 +2039,7 @@ dependencies = [
 [[package]]
 name = "tessera-lower"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "derive_more",
  "scattered-collect",
@@ -2046,7 +2059,7 @@ dependencies = [
 [[package]]
 name = "tessera-mem"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "scattered-collect",
  "tessera-graph",
@@ -2056,7 +2069,7 @@ dependencies = [
 [[package]]
 name = "tessera-models"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "scattered-collect",
  "serde",
@@ -2068,7 +2081,7 @@ dependencies = [
 [[package]]
 name = "tessera-platform"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "include_dir",
  "serde",
@@ -2078,7 +2091,7 @@ dependencies = [
 [[package]]
 name = "tessera-publish"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2090,7 +2103,7 @@ dependencies = [
 [[package]]
 name = "tessera-rules"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-attention",
  "tessera-cpu",
@@ -2102,7 +2115,7 @@ dependencies = [
 [[package]]
 name = "tessera-run"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "rayon",
  "tessera-codegen",
@@ -2120,7 +2133,7 @@ dependencies = [
 [[package]]
 name = "tessera-sim"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "serde",
  "tessera-work",
@@ -2129,7 +2142,7 @@ dependencies = [
 [[package]]
 name = "tessera-tasks"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "serde_json",
  "tessera-bundle",
@@ -2139,7 +2152,7 @@ dependencies = [
 [[package]]
 name = "tessera-testkit"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-graph",
  "tessera-mem",
@@ -2149,7 +2162,7 @@ dependencies = [
 [[package]]
 name = "tessera-trace"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "tessera-graph",
  "tessera-trace-derive",
@@ -2158,7 +2171,7 @@ dependencies = [
 [[package]]
 name = "tessera-trace-derive"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2168,7 +2181,7 @@ dependencies = [
 [[package]]
 name = "tessera-wasm"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 dependencies = [
  "serde",
  "serde_json",
@@ -2183,7 +2196,7 @@ dependencies = [
 [[package]]
 name = "tessera-work"
 version = "0.1.0"
-source = "git+https://github.com/kindlingai/tessera?rev=fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8#fa1dcf9d33c4bb72194ab25c0c63ab0ec520b7f8"
+source = "git+https://github.com/kindlingai/tessera?rev=ad98139d7ec6b4717aa81b14bb4685f3fb34f173#ad98139d7ec6b4717aa81b14bb4685f3fb34f173"
 
 [[package]]
 name = "thiserror"
