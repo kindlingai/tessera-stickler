@@ -1,5 +1,5 @@
 use crate::files::Source;
-use crate::text::check;
+use crate::text::{Config, check};
 
 fn lines(path: &str, text: &str) -> Vec<usize> {
     let src = Source {
@@ -7,8 +7,12 @@ fn lines(path: &str, text: &str) -> Vec<usize> {
         text: text.into(),
         lines: text.lines().count(),
     };
+    let rule = Config {
+        tokens: vec!["f_fn".into(), "f_const(".into(), "{{\\n".into()],
+        allow: vec!["engine/plan/codegen/src/dialect.rs".into()],
+    };
     let mut out = Vec::new();
-    check(&src, &mut out);
+    check(&src, &rule, &mut out);
     out.iter().map(|v| v.line).collect()
 }
 

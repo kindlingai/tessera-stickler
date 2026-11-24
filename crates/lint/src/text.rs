@@ -37,8 +37,7 @@ fn literals(tokens: TokenStream, out: &mut Vec<(usize, String)>) {
     }
 }
 
-pub fn check(src: &Source, out: &mut Vec<Violation>) {
-    let rule = &crate::LIMITS.kernel_text;
+pub fn check(src: &Source, rule: &Config, out: &mut Vec<Violation>) {
     if rule.allow.iter().any(|a| src.path.ends_with(a)) || is_test_file(&src.path) {
         return;
     }

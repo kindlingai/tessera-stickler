@@ -209,7 +209,7 @@ fn check_file(
     comments::check(src, is_rust, out);
     if is_rust {
         rust::check(src, out, names, tests);
-        text::check(src, out);
+        text::check(src, &LIMITS.kernel_text, out);
     } else {
         kernel::check(src, names);
     }
