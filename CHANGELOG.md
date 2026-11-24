@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/kindlingai/tessera-stickler/compare/v0.4.2...v0.4.3) (2026-11-24)
+
+
+### Features
+
+* **maps:** add a context query that prints each step's code ([#7](https://github.com/kindlingai/tessera-stickler/issues/7)) ([f83e1c3](https://github.com/kindlingai/tessera-stickler/commit/f83e1c31e31e033fcd16eae6f586fefbb1d776e0))
+
 ## [0.4.2](https://github.com/kindlingai/tessera-stickler/compare/v0.4.1...v0.4.2) (2026-11-24)
 
 
