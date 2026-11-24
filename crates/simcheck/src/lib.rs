@@ -49,6 +49,8 @@ struct Settings {
     max_lean: f32,
     extensions: Vec<String>,
     similar_allow: String,
+    #[serde(default)]
+    spec_paths: Vec<String>,
 }
 
 /// The repository root, and its lint.toml.
@@ -177,7 +179,7 @@ fn check(
     let (root, s) = settings()?;
     let allow =
         std::fs::read_to_string(root.join(&s.similar_allow)).context(s.similar_allow.clone())?;
-    let allow = Allow::parse(&allow)?;
+    let allow = Allow::parse(&allow)?.with_spec(s.spec_paths.clone());
     let wins = all_windows(&root, &s)?;
     let mut cache = Cache::open(cache_file)?;
     let changed = changed_files(&root, base, mode.staged)?;

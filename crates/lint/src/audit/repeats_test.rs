@@ -1,5 +1,5 @@
 use super::repeats::{Exprs, check, exprs};
-use crate::files::Source;
+use crate::files::{Source, spec_places};
 
 fn flagged(files: &[(&str, &str)]) -> Vec<String> {
     let sources: Vec<Source> = files
@@ -71,4 +71,14 @@ fn matches_thrice_fail() {
              p.iter().map(seg).collect()\n}\n";
     assert!(flagged(&[("a.rs", f), ("b.rs", f)]).is_empty());
     assert_eq!(flagged(&[("a.rs", f), ("b.rs", f), ("c.rs", f)]), ["a.rs"]);
+}
+
+#[test]
+fn spec_files_count_once() {
+    let globs = ["m/*.rs".to_string(), "!m/x.rs".to_string()];
+    let count = |p: &[&str]| spec_places(&globs, p.iter().copied());
+    assert_eq!(count(&["m/a.rs", "m/b.rs"]), 1);
+    assert_eq!(count(&["m/a.rs", "m/a.rs", "m/b.rs"]), 2);
+    assert_eq!(count(&["m/a.rs", "m/x.rs"]), 2);
+    assert_eq!(count(&["m/a.rs", "c.rs"]), 2);
 }

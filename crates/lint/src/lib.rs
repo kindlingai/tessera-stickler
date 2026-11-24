@@ -66,6 +66,8 @@ pub(crate) struct Limits {
     #[serde(default)]
     pub allowed_type_copies: Vec<Vec<String>>,
     pub kernel_text: text::Config,
+    #[serde(default)]
+    pub spec_paths: Vec<String>,
     pub publish_groups: bool,
 }
 

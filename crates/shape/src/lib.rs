@@ -1,4 +1,4 @@
-//! Line shapes and merge conflicts, for tools/lint and tools/simcheck.
+//! Line shapes, merge conflicts and globs, for tools/lint and tools/simcheck.
 
 use std::iter::Peekable;
 use std::str::Chars;
@@ -40,4 +40,42 @@ pub fn shape(line: &str) -> String {
 pub fn conflict(text: &str) -> Option<usize> {
     let marker = |l: &str| l == "<<<<<<<" || l.starts_with("<<<<<<< ");
     text.lines().position(marker).map(|i| i + 1)
+}
+
+/// A later `!` glob drops what earlier globs match.
+pub fn matches(globs: &[String], path: &str) -> bool {
+    let mut hit = false;
+    for g in globs {
+        match g.strip_prefix('!') {
+            Some(g) => hit &= !glob(g, path),
+            None => hit |= glob(g, path),
+        }
+    }
+    hit
+}
+
+/// A trailing `/` matches files under the directory.
+fn glob(pattern: &str, path: &str) -> bool {
+    let (pattern, under) = match pattern.strip_suffix('/') {
+        Some(p) => (p, true),
+        None => (pattern, false),
+    };
+    let mut have = path.split('/');
+    for want in pattern.split('/') {
+        if !have.next().is_some_and(|h| segment(want, h)) {
+            return false;
+        }
+    }
+    under != have.next().is_none()
+}
+
+/// `*` matches any run within one path segment.
+fn segment(want: &str, have: &str) -> bool {
+    let Some((head, tail)) = want.split_once('*') else {
+        return want == have;
+    };
+    let Some(rest) = have.strip_prefix(head) else {
+        return false;
+    };
+    (0..=rest.len()).any(|i| rest.is_char_boundary(i) && segment(tail, &rest[i..]))
 }

@@ -40,3 +40,20 @@ fn near_copies_found() {
     let (hits, _) = near(&wins, &embs, (20, 0.99), &none, Some(&focus));
     assert!(hits.is_empty());
 }
+
+#[test]
+fn spec_files_pass() {
+    let wins = [
+        win("m/a.rs", 1),
+        win("m/a.rs", 40),
+        win("m/b.rs", 1),
+        win("c.rs", 1),
+    ];
+    let embs = [unit(0.0), unit(0.0), unit(0.0), unit(1.0)];
+    let spec = Allow::parse("pairs = []").unwrap();
+    let spec = spec.with_spec(vec!["m/*.rs".into()]);
+    let (hits, _) = near(&wins, &embs, (20, 0.99), &spec, None);
+    // Only the copy inside m/a.rs counts.
+    let found: Vec<_> = hits.iter().map(|h| (h.a, h.b)).collect();
+    assert_eq!(found, [(0, 1)]);
+}
