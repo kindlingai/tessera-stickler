@@ -62,14 +62,19 @@ pub fn check(pkgs: &[Pkg], layers: &[Vec<String>], allow: &[Allow], out: &mut Ve
         }
     }
     for (a, used) in allow.iter().zip(used) {
-        if !used {
-            out.push(Violation {
-                path: "lint.toml".into(),
-                line: 1,
-                rule: "layers",
-                message: format!("`{}` to `{}` is no longer upward: remove it", a.from, a.to),
-            });
-        }
+        let message = if !used {
+            format!("`{}` to `{}` is no longer upward: remove it", a.from, a.to)
+        } else if a.reason.trim().is_empty() {
+            format!("`{}` to `{}` needs a reason", a.from, a.to)
+        } else {
+            continue;
+        };
+        out.push(Violation {
+            path: "lint.toml".into(),
+            line: 1,
+            rule: "layers",
+            message,
+        });
     }
 }
 
