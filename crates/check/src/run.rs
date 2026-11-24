@@ -11,7 +11,7 @@ pub enum Changes {
     Message(String),
 }
 
-pub type Check = fn(&Dirs, &Changes) -> Result<Report, String>;
+pub(crate) type Check = fn(&Dirs, &Changes) -> Result<Report, String>;
 
 /// Shared models and embeddings, and this checkout's reports.
 pub struct Dirs {
@@ -74,7 +74,7 @@ fn skipped(tool: &str, title: &str, why: String) -> Report {
     }
 }
 
-pub fn lint(dirs: &Dirs, _: &Changes) -> Result<Report, String> {
+pub(crate) fn lint(dirs: &Dirs, _: &Changes) -> Result<Report, String> {
     let json = dirs.out.join("lint.json");
     let path = json.to_string_lossy();
     exec(dirs, "lint", "lint", &["--json", &path], &json)
@@ -134,7 +134,7 @@ pub fn style(dirs: &Dirs, changes: &Changes) -> Result<Report, String> {
     exec(dirs, "style", "style", &args, &json)
 }
 
-pub fn simcheck(dirs: &Dirs, changes: &Changes) -> Result<Report, String> {
+pub(crate) fn simcheck(dirs: &Dirs, changes: &Changes) -> Result<Report, String> {
     if !dirs.eg2.join("config.json").exists() || !dirs.eg2.join("model.safetensors").exists() {
         let why = format!(
             "no EmbeddingGemma model in {}: {FETCH}",

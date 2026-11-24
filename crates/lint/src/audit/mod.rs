@@ -27,8 +27,8 @@ use crate::{LIMITS, Violation};
 use unused::exported;
 
 pub use deps::Thin;
-pub use layers::{Allow, Facade};
-pub use repeats::Exprs;
+pub(crate) use layers::{Allow, Facade};
+pub(crate) use repeats::Exprs;
 
 /// Rules in `warn_rules` only advise.
 pub fn level(rule: &str, warn: &[String]) -> Level {
@@ -97,7 +97,7 @@ fn macros(items: &[Item], out: &mut Vec<(String, usize)>) {
 }
 
 /// `groups` holds the crate directories each published crate merges.
-pub fn clashes(
+pub(crate) fn clashes(
     dirs: &[String],
     groups: &[Vec<String>],
     sources: &[Source],

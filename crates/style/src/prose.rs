@@ -14,7 +14,7 @@ pub fn extension(path: &str) -> &str {
     name.rsplit_once('.').map_or("", |(_, e)| e)
 }
 
-pub fn is_prose_file(path: &str) -> bool {
+pub(crate) fn is_prose_file(path: &str) -> bool {
     PROSE_EXTS.contains(&extension(path))
 }
 
@@ -22,7 +22,7 @@ pub fn is_prose_file(path: &str) -> bool {
 const STRING_WORDS: std::ops::RangeInclusive<usize> = 3..=12;
 
 /// Short string literals in a code line, before any comment.
-pub fn strings(path: &str, line: &str) -> Vec<String> {
+pub(crate) fn strings(path: &str, line: &str) -> Vec<String> {
     if is_prose_file(path) || HASH_EXTS.contains(&extension(path)) {
         return Vec::new();
     }
@@ -52,7 +52,7 @@ fn description(path: &str, line: &str) -> Option<String> {
 }
 
 /// A line's comment and marker. Prose files keep whole lines.
-pub fn comment(path: &str, line: &str) -> Option<String> {
+pub(crate) fn comment(path: &str, line: &str) -> Option<String> {
     if let Some(text) = description(path, line) {
         return Some(text);
     }
@@ -73,7 +73,7 @@ pub fn comment(path: &str, line: &str) -> Option<String> {
 }
 
 /// Marks `!` each line under a `prose: ignore [N]` marker.
-pub fn apply_ignore(lines: &mut [String]) {
+pub(crate) fn apply_ignore(lines: &mut [String]) {
     let re = Regex::new(r"(?:<!--|//+|#+)\s*prose:\s*ignore(?:\s+(\d+))?\s*(?:-->)?\s*$")
         .expect("valid");
     let mut left = 0;
@@ -102,7 +102,7 @@ pub fn apply_ignore(lines: &mut [String]) {
 }
 
 /// Blanks code blocks, and turns quoted and backticked spans into `"…"`.
-pub fn mask_markdown(lines: &mut [String]) {
+pub(crate) fn mask_markdown(lines: &mut [String]) {
     let (mut fence, mut indented, mut prev_blank, mut close) = (false, false, true, None);
     for raw in lines.iter_mut() {
         let (mark, line) = raw.split_at(1);

@@ -21,8 +21,7 @@
     ".": {
       "release-type": "simple",
       "package-name": "stickler",
-      "changelog-path": "CHANGELOG.md",
-      "release-as": "0.4.0"
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }

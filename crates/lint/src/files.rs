@@ -25,7 +25,7 @@ impl Source {
     }
 }
 
-pub fn repo_root() -> PathBuf {
+pub(crate) fn repo_root() -> PathBuf {
     let out = Command::new("git")
         .args(["rev-parse", "--show-toplevel"])
         .output();
@@ -52,7 +52,7 @@ fn matches(pattern: &str, path: &str) -> bool {
 }
 
 /// Files with `#` comments, per `hash_comment_files`.
-pub fn hash_sources(root: &Path) -> Result<Vec<Source>, String> {
+pub(crate) fn hash_sources(root: &Path) -> Result<Vec<Source>, String> {
     read(root, |path| {
         LIMITS.hash_comment_files.iter().any(|p| matches(p, path))
     })
@@ -76,7 +76,7 @@ fn read(root: &Path, keep: impl Fn(&str) -> bool) -> Result<Vec<Source>, String>
 
 /// One file whose type is not on the allow list.
 #[derive(serde::Deserialize)]
-pub struct Exception {
+pub(crate) struct Exception {
     pub path: String,
     pub reason: String,
 }
@@ -100,7 +100,7 @@ fn config_violation(path: &str, message: String) -> Violation {
 }
 
 /// `exists` says if an excepted path is in the tree.
-pub fn check_paths(
+pub(crate) fn check_paths(
     paths: &[String],
     allowed: &[String],
     exceptions: &[Exception],
@@ -135,7 +135,7 @@ pub fn check_paths(
     }
 }
 
-pub fn check_types(root: &Path, out: &mut Vec<Violation>) -> Result<(), String> {
+pub(crate) fn check_types(root: &Path, out: &mut Vec<Violation>) -> Result<(), String> {
     let exists = |p: &str| root.join(p).exists();
     let paths: Vec<String> = listed(root)?.into_iter().filter(|p| exists(p)).collect();
     let (allowed, exceptions) = (&LIMITS.file_types, &LIMITS.file_type_exceptions);
@@ -144,7 +144,7 @@ pub fn check_types(root: &Path, out: &mut Vec<Violation>) -> Result<(), String> 
 }
 
 /// Directories holding a package manifest.
-pub fn crate_dirs(root: &Path) -> Result<Vec<String>, String> {
+pub(crate) fn crate_dirs(root: &Path) -> Result<Vec<String>, String> {
     let mut dirs = Vec::new();
     for path in listed(root)? {
         let Some(dir) = path.strip_suffix("Cargo.toml") else {
@@ -159,7 +159,7 @@ pub fn crate_dirs(root: &Path) -> Result<Vec<String>, String> {
 }
 
 /// The deepest crate directory holding `path`.
-pub fn owner<'a>(dirs: &'a [String], path: &str) -> Option<&'a str> {
+pub(crate) fn owner<'a>(dirs: &'a [String], path: &str) -> Option<&'a str> {
     dirs.iter()
         .filter(|d| path.starts_with(d.as_str()))
         .max_by_key(|d| d.len())
@@ -179,7 +179,7 @@ fn language(path: &Path) -> Option<&'static str> {
 }
 
 /// A `macros/` file's language and its macros directory.
-pub fn macro_dir(crate_dir: &str, path: &str) -> Option<(&'static str, String)> {
+pub(crate) fn macro_dir(crate_dir: &str, path: &str) -> Option<(&'static str, String)> {
     let rel = Path::new(path.strip_prefix(crate_dir)?);
     let mut dir = PathBuf::from(crate_dir);
     for part in rel.parent()?.components() {
@@ -205,7 +205,7 @@ fn max_files(modules: usize) -> usize {
     LIMITS.max_crate_files_base + extra * LIMITS.max_crate_files_addl_module
 }
 
-pub fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Violation>) {
+pub(crate) fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Violation>) {
     let mut totals: BTreeMap<&str, Tally> = BTreeMap::new();
     let mut macros: BTreeMap<(&str, &str), Vec<String>> = BTreeMap::new();
     for src in sources {

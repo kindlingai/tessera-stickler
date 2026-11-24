@@ -11,8 +11,8 @@ const MAGIC: &[u8; 8] = b"simck002";
 /// The layout before last uses. Its entries load as new.
 const OLD_MAGIC: &[u8; 8] = b"simck001";
 /// Saving drops entries unused for this long.
-pub const KEEP_SECS: u64 = 7 * 24 * 60 * 60;
-pub const SHARDS: u64 = 16;
+pub(crate) const KEEP_SECS: u64 = 7 * 24 * 60 * 60;
+pub(crate) const SHARDS: u64 = 16;
 /// Keep in step with eg2cpu's `rev` in Cargo.toml.
 const EG2CPU: &str = "a80156abbf8ec2e5a9b85ed0e5ff98454c1aaa09";
 
@@ -27,7 +27,7 @@ pub fn key(text: &str) -> u64 {
         })
 }
 
-pub fn now() -> u64 {
+pub(crate) fn now() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |d| d.as_secs())
@@ -41,7 +41,7 @@ fn shard_path(dir: &Path, k: u64) -> PathBuf {
 type Entries = HashMap<u64, (u64, Vec<f32>)>;
 
 #[derive(Default)]
-pub struct Cache {
+pub(crate) struct Cache {
     dim: usize,
     map: Entries,
 }

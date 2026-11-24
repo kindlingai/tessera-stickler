@@ -62,26 +62,31 @@ pub fn check(pkgs: &[Pkg], layers: &[Vec<String>], allow: &[Allow], out: &mut Ve
         }
     }
     for (a, used) in allow.iter().zip(used) {
-        if !used {
-            out.push(Violation {
-                path: "lint.toml".into(),
-                line: 1,
-                rule: "layers",
-                message: format!("`{}` to `{}` is no longer upward: remove it", a.from, a.to),
-            });
-        }
+        let message = if !used {
+            format!("`{}` to `{}` is no longer upward: remove it", a.from, a.to)
+        } else if a.reason.trim().is_empty() {
+            format!("`{}` to `{}` needs a reason", a.from, a.to)
+        } else {
+            continue;
+        };
+        out.push(Violation {
+            path: "lint.toml".into(),
+            line: 1,
+            rule: "layers",
+            message,
+        });
     }
 }
 
 /// Crates in `dir` may depend on `crates` and each other.
 #[derive(serde::Deserialize)]
-pub struct Facade {
+pub(crate) struct Facade {
     pub dir: String,
     pub crates: Vec<String>,
 }
 
 /// Normal dependencies of facade crates, dev-dependencies excepted.
-pub fn facade(pkgs: &[Pkg], rule: &Facade, out: &mut Vec<Violation>) {
+pub(crate) fn facade(pkgs: &[Pkg], rule: &Facade, out: &mut Vec<Violation>) {
     for p in pkgs.iter().filter(|p| p.dir.starts_with(&rule.dir)) {
         for d in p.deps.iter().filter(|d| d.kind != Kind::Dev) {
             let inside = pkgs
@@ -109,7 +114,12 @@ pub fn facade(pkgs: &[Pkg], rule: &Facade, out: &mut Vec<Violation>) {
 }
 
 /// Crates whose dependencies sit `gap` or more layers below.
-pub fn placement(pkgs: &[Pkg], layers: &[Vec<String>], gap: usize, out: &mut Vec<Violation>) {
+pub(crate) fn placement(
+    pkgs: &[Pkg],
+    layers: &[Vec<String>],
+    gap: usize,
+    out: &mut Vec<Violation>,
+) {
     for p in pkgs {
         let Some(mine) = layer_of(layers, &p.dir) else {
             continue;
