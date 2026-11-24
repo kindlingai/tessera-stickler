@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::files::Source;
+use crate::files::{Source, spec_places};
 use crate::{LIMITS, Violation};
 use stickler_shape::shape;
 
@@ -94,9 +94,10 @@ pub fn check(sources: &[Source], out: &mut Vec<Violation>) {
 }
 
 fn step(files: &[Shaped], len: usize, max: usize, done: &mut Done, out: &mut Vec<Violation>) {
+    let path = |&(f, _): &(usize, usize)| files[f].src.path.as_str();
     let mut hits: Vec<Places> = places(files, len)
         .into_values()
-        .filter(|p| p.len() > max)
+        .filter(|p| spec_places(&LIMITS.spec_paths, p.iter().map(path)) > max)
         .collect();
     hits.sort();
     for p in hits {

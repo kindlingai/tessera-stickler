@@ -8,7 +8,7 @@ use syn::spanned::Spanned;
 use syn::visit::Visit;
 use syn::{Attribute, Expr, ImplItem, Item};
 
-use crate::files::Source;
+use crate::files::{Source, spec_places};
 use crate::rust::{is_test, is_test_file};
 use crate::{LIMITS, Violation};
 
@@ -126,7 +126,9 @@ pub fn check(sources: &[Source], out: &mut Vec<Violation>) {
             groups.entry(&f.skeleton).or_default().push(f);
         }
     }
-    for (_, fns) in groups.iter().filter(|(_, f)| f.len() > 1) {
+    let copied =
+        |fns: &Vec<&Func>| spec_places(&LIMITS.spec_paths, fns.iter().map(|f| f.path.as_str())) > 1;
+    for (_, fns) in groups.iter().filter(|(_, f)| copied(f)) {
         let at = |f: &&Func| format!("{}:{} `{}`", f.path, f.line, f.name);
         let others: Vec<String> = fns[1..].iter().map(at).collect();
         out.push(Violation {

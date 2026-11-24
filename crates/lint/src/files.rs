@@ -271,3 +271,15 @@ pub(crate) fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Vi
         }
     }
 }
+
+/// Files `globs` match together count as their busiest one.
+pub(crate) fn spec_places<'a>(globs: &[String], paths: impl IntoIterator<Item = &'a str>) -> usize {
+    let (mut other, mut specs) = (0, BTreeMap::<&str, usize>::new());
+    for p in paths {
+        match stickler_shape::matches(globs, p) {
+            true => *specs.entry(p).or_default() += 1,
+            false => other += 1,
+        }
+    }
+    other + specs.values().max().unwrap_or(&0)
+}

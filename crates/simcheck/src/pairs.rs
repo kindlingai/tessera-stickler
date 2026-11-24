@@ -19,11 +19,22 @@ pub struct Hit {
 #[derive(Deserialize)]
 pub struct Allow {
     pairs: Vec<(String, String)>,
+    /// Globs of files that may hold copies of each other.
+    #[serde(skip)]
+    spec: Vec<String>,
 }
 
 impl Allow {
     pub fn parse(text: &str) -> Result<Allow> {
         Ok(toml::from_str(text)?)
+    }
+
+    /// Also allows copies between two files `globs` match.
+    pub fn with_spec(self, globs: Vec<String>) -> Allow {
+        Allow {
+            spec: globs,
+            ..self
+        }
     }
 
     /// The index of the pair that allows `a` beside `b`.
@@ -86,6 +97,10 @@ pub fn near(
             .and_then(|e| e.to_str())
             .unwrap_or("")
     });
+    let spec: Vec<bool> = wins
+        .iter()
+        .map(|w| stickler_shape::matches(&allow.spec, &w.path))
+        .collect();
     let wanted = |i: usize| focus.is_none_or(|f| f[i]);
     let found: Vec<(usize, usize, f32)> = (0..wins.len())
         .into_par_iter()
@@ -96,6 +111,9 @@ pub fn near(
                     continue;
                 }
                 if file[i] == file[j] && overlap(&wins[i], &wins[j], window) {
+                    continue;
+                }
+                if file[i] != file[j] && spec[i] && spec[j] {
                     continue;
                 }
                 let s = dot(&embs[i], &embs[j]);

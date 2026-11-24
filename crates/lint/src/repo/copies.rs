@@ -78,8 +78,12 @@ pub fn check(dirs: &[String], sources: &[Source], out: &mut Vec<Violation>) {
         }
     }
     for list in groups.values() {
-        let mut crates: Vec<Option<&str>> =
-            list.iter().map(|(s, _)| owner(dirs, &s.path)).collect();
+        // Spec files count as one crate.
+        let home = |s: &Source| match stickler_shape::matches(&LIMITS.spec_paths, &s.path) {
+            true => Some("spec_paths"),
+            false => owner(dirs, &s.path),
+        };
+        let mut crates: Vec<Option<&str>> = list.iter().map(|(s, _)| home(s)).collect();
         crates.sort();
         crates.dedup();
         let ids: Vec<String> = list.iter().map(|(s, d)| id(s, d)).collect();
