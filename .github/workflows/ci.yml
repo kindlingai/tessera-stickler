@@ -34,6 +34,8 @@ jobs:
       - name: Check out the pinned tessera revision
         run: |
           rev=$(sed -n 's|.*kindlingai/tessera", rev = "\([0-9a-f]*\)".*|\1|p' Cargo.toml | head -n 1)
+          # The rust cache can restore an older checkout here.
+          rm -rf target/tessera
           git init -q target/tessera
           git -C target/tessera fetch -q --depth 1 https://github.com/kindlingai/tessera "$rev"
           git -C target/tessera checkout -q FETCH_HEAD
