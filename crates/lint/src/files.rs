@@ -6,7 +6,9 @@ use std::process::Command;
 
 use stickler_maps::listed;
 
-use crate::{LIMITS, Violation};
+use stickler_findings::Measure;
+
+use crate::{LIMITS, Violation, measure};
 
 pub struct Source {
     pub path: String,
@@ -205,7 +207,12 @@ fn max_files(modules: usize) -> usize {
     LIMITS.max_crate_files_base + extra * LIMITS.max_crate_files_addl_module
 }
 
-pub(crate) fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Violation>) {
+pub(crate) fn check_crates(
+    dirs: &[String],
+    sources: &[Source],
+    out: &mut Vec<Violation>,
+    measures: &mut Vec<Measure>,
+) {
     let mut totals: BTreeMap<&str, Tally> = BTreeMap::new();
     let mut macros: BTreeMap<(&str, &str), Vec<String>> = BTreeMap::new();
     for src in sources {
@@ -251,7 +258,7 @@ pub(crate) fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Vi
         let path = format!("{dir}Cargo.toml");
         let (files, lines, modules) = (t.files, t.lines, t.modules.len());
         let (budget, max_lines) = (max_files(modules), LIMITS.max_crate_lines);
-        if files > budget {
+        if measure(measures, "crate-files", &path, files, budget) {
             out.push(Violation {
                 path: path.clone(),
                 line: 1,
@@ -261,7 +268,7 @@ pub(crate) fn check_crates(dirs: &[String], sources: &[Source], out: &mut Vec<Vi
                 ),
             });
         }
-        if lines > max_lines {
+        if measure(measures, "crate-lines", &path, lines, max_lines) {
             out.push(Violation {
                 path,
                 line: 1,

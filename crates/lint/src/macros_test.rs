@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use crate::LIMITS;
 use crate::files::{Exception, Source, check_crates, check_paths, macro_dir};
 use crate::macros::{calls, check};
 
@@ -15,7 +16,7 @@ fn rules(sources: &[Source]) -> Vec<&'static str> {
     let dirs = ["crates/a/".to_string()];
     let mut out = Vec::new();
     check(&dirs, sources, &mut out);
-    check_crates(&dirs, sources, &mut out);
+    check_crates(&dirs, sources, &mut out, &mut Vec::new());
     out.iter().map(|v| v.rule).collect()
 }
 
@@ -108,4 +109,34 @@ fn file_type_rule() {
     assert!(bare.len() == 1 && bare[0].contains("not allowed"));
     let stale = found(&tree[..2], &[("t/ref.py", "")], "t/ref.py");
     assert_eq!(stale.len(), 2);
+}
+
+/// Violations and measures from a crate one file over.
+fn oversized() -> (Vec<String>, Vec<String>) {
+    let dirs = ["crates/a/".to_string()];
+    let (mut out, mut measures) = (Vec::new(), Vec::new());
+    let sources = many(26, |_| "f".into(), "fn f() {}\n");
+    check_crates(&dirs, &sources, &mut out, &mut measures);
+    let found = out.iter().map(|v| format!("{} {}", v.path, v.message));
+    let sizes = measures
+        .iter()
+        .map(|m| format!("{} {} {}/{}", m.path, m.rule, m.value, m.max));
+    (found.collect(), sizes.collect())
+}
+
+/// What `oversized` should give, from the lint.toml limits.
+fn oversized_wanted() -> (Vec<String>, Vec<String>) {
+    let (files, lines) = (LIMITS.max_crate_files_base, LIMITS.max_crate_lines);
+    let path = "crates/a/Cargo.toml";
+    let found = format!("{path} 26 source files (max {files} for 1 source directories)");
+    let sizes = [
+        format!("{path} crate-files 26/{files}"),
+        format!("{path} crate-lines 26/{lines}"),
+    ];
+    (vec![found], sizes.into())
+}
+
+#[test]
+fn crate_measures_match_violations() {
+    assert_eq!(oversized(), oversized_wanted());
 }
