@@ -32,6 +32,8 @@ mod text_test;
 
 use std::process::ExitCode;
 
+use stickler_findings::Measure;
+
 /// The limits in lint.toml at the repository root.
 #[derive(serde::Deserialize)]
 pub(crate) struct Limits {
@@ -87,6 +89,23 @@ pub struct Violation {
     pub message: String,
 }
 
+/// Records `value` against `max`, and says if it is over.
+pub(crate) fn measure(
+    out: &mut Vec<Measure>,
+    rule: &str,
+    path: &str,
+    value: usize,
+    max: usize,
+) -> bool {
+    out.push(Measure {
+        rule: rule.into(),
+        path: path.into(),
+        value,
+        max,
+    });
+    value > max
+}
+
 /// A conflicted file skips the per-file rules and shape runs.
 const CONFLICT: &str = "unresolved merge conflict. Resolve it, then run lint again.";
 
@@ -108,8 +127,9 @@ fn run(args: &[&str]) -> Result<bool, String> {
         ["--json", file, paths @ ..] => (Some(*file), paths),
         _ => (None, rest),
     };
-    let (mut found, count) = if only {
-        comment_rules(&root, paths)?
+    let (mut found, mut measures, count) = if only {
+        let (found, count) = comment_rules(&root, paths)?;
+        (found, Vec::new(), count)
     } else if paths.is_empty() {
         every_rule(&root)?
     } else {
@@ -120,7 +140,8 @@ fn run(args: &[&str]) -> Result<bool, String> {
         println!("{}:{}: {}: {}", v.path, v.line, v.rule, v.message);
     }
     if let Some(file) = json {
-        report(&found).write(std::path::Path::new(file))?;
+        measures.sort_by(|a, b| (&a.path, &a.rule).cmp(&(&b.path, &b.rule)));
+        report(&found, measures).write(std::path::Path::new(file))?;
     }
     let fails = found.iter().filter(|v| !is_note(v)).count();
     let notes = found.len() - fails;
@@ -149,20 +170,21 @@ fn comment_rules(
     Ok((found, sources.len()))
 }
 
-fn every_rule(root: &std::path::Path) -> Result<(Vec<Violation>, usize), String> {
+fn every_rule(root: &std::path::Path) -> Result<(Vec<Violation>, Vec<Measure>, usize), String> {
     let sources = files::sources(root)?;
     let dirs = files::crate_dirs(root)?;
     let (mut found, mut names, mut tests) = (Vec::new(), Vec::new(), Vec::new());
+    let mut measures = Vec::new();
     for src in &sources {
         match stickler_shape::conflict(&src.text) {
             Some(line) => found.push(src.violation(line, "conflict", CONFLICT.into())),
-            None => check_file(src, &mut found, &mut names, &mut tests),
+            None => check_file(src, &mut found, &mut measures, &mut names, &mut tests),
         }
     }
     share::check(&dirs, &sources, &tests, &mut found);
     names::check(&dirs, &names, &mut found);
     macros::check(&dirs, &sources, &mut found);
-    files::check_crates(&dirs, &sources, &mut found);
+    files::check_crates(&dirs, &sources, &mut found, &mut measures);
     runs::check(&sources, &mut found);
     repo::copies::check(&dirs, &sources, &mut found);
     repo::revisions::check(root, &sources, &mut found);
@@ -180,7 +202,7 @@ fn every_rule(root: &std::path::Path) -> Result<(Vec<Violation>, usize), String>
         });
     }
     audit::check(root, &dirs, &sources, &mut found)?;
-    Ok((found, sources.len()))
+    Ok((found, measures, sources.len()))
 }
 
 /// A note advises and does not fail the run.
@@ -189,8 +211,9 @@ fn is_note(v: &Violation) -> bool {
 }
 
 /// Violations as findings, for stickler.
-fn report(found: &[Violation]) -> stickler_findings::Report {
+fn report(found: &[Violation], measures: Vec<Measure>) -> stickler_findings::Report {
     let mut r = stickler_findings::Report::new("lint", "Code shape");
+    r.measures = measures;
     for v in found {
         r.findings.push(stickler_findings::Finding {
             rule: v.rule.into(),
@@ -208,11 +231,12 @@ fn report(found: &[Violation]) -> stickler_findings::Report {
 fn check_file(
     src: &files::Source,
     out: &mut Vec<Violation>,
+    measures: &mut Vec<Measure>,
     names: &mut Vec<names::Name>,
     tests: &mut Vec<share::TestFile>,
 ) {
     let max = LIMITS.max_file_lines;
-    if src.lines > max {
+    if measure(measures, "file-lines", &src.path, src.lines, max) {
         out.push(src.violation(1, "file-lines", format!("{} lines (max {max})", src.lines)));
     }
     let is_rust = src.path.ends_with(".rs");

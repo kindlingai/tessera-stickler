@@ -16,6 +16,9 @@ pub struct Report {
     pub rules: BTreeMap<String, Rule>,
     #[serde(default)]
     pub findings: Vec<Finding>,
+    /// Sizes against their limits, over or not.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub measures: Vec<Measure>,
     /// Set when the tool did not run, with the reason.
     #[serde(default)]
     pub skipped: Option<String>,
@@ -49,6 +52,15 @@ pub struct Finding {
     /// A change that clears the finding, like a new line.
     #[serde(default)]
     pub fix: Option<String>,
+}
+
+/// A size and the limit its rule checks.
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+pub struct Measure {
+    pub rule: String,
+    pub path: String,
+    pub value: usize,
+    pub max: usize,
 }
 
 #[derive(Serialize, Deserialize)]
