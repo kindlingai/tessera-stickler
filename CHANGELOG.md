@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/kindlingai/tessera-stickler/compare/v0.4.3...v0.4.4) (2026-11-26)
+
+
+### Features
+
+* **lint:** report crate and file sizes against their limits in --json ([#9](https://github.com/kindlingai/tessera-stickler/issues/9)) ([eddbc75](https://github.com/kindlingai/tessera-stickler/commit/eddbc752be1ad730efbd5b20dc0e1d59382ea14c))
+
 ## [0.4.3](https://github.com/kindlingai/tessera-stickler/compare/v0.4.2...v0.4.3) (2026-11-24)
 
 
