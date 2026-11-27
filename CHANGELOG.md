@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/kindlingai/tessera-stickler/compare/v0.4.4...v0.4.5) (2026-11-27)
+
+
+### Features
+
+* **maps:** check run step args against the package's cli.json ([#11](https://github.com/kindlingai/tessera-stickler/issues/11)) ([68eef9e](https://github.com/kindlingai/tessera-stickler/commit/68eef9e109890594f4647d213edb6b91d3eab162))
+
 ## [0.4.4](https://github.com/kindlingai/tessera-stickler/compare/v0.4.3...v0.4.4) (2026-11-26)
 
 
