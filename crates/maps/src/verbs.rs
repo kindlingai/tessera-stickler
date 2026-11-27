@@ -3,6 +3,7 @@
 use std::collections::BTreeSet;
 
 use crate::calls::{top_idents, top_lits};
+use crate::cli;
 use crate::code::{Item, Kind, Repo, glob};
 use crate::map::{Class, Each, Mode, Step, Verb};
 use crate::registry::Inventory;
@@ -197,7 +198,7 @@ impl Book<'_> {
                 fail(format!("names no file under `{at}`"))
             }
             (Verb::Test, Some(s)) => self.tests(&s, &with, step.via.as_deref()).or_else(fail),
-            (Verb::Run, _) => self.runs(&field(&step.pkg), step.mode),
+            (Verb::Run, _) => self.runs(&field(&step.pkg), step.mode, step.args.as_deref()),
             _ => Ok(()),
         }
     }
@@ -302,7 +303,7 @@ impl Book<'_> {
         }
     }
 
-    fn runs(&self, pkg: &str, mode: Option<Mode>) -> Result<(), String> {
+    fn runs(&self, pkg: &str, mode: Option<Mode>, args: Option<&[String]>) -> Result<(), String> {
         let k = self
             .repo
             .package(pkg)
@@ -313,10 +314,20 @@ impl Book<'_> {
             Some(Mode::Bin) => k.bin,
             None => true,
         };
-        match has {
-            true => Ok(()),
-            false => Err(format!("`{pkg}` has no target for {mode:?}")),
+        if !has {
+            return Err(format!("`{pkg}` has no target for {mode:?}"));
         }
+        let Some(args) = args else {
+            return Ok(());
+        };
+        if mode != Some(Mode::Bin) {
+            return Err("`args` needs `mode = \"bin\"`".into());
+        }
+        let file = format!("{}{}", k.dir, cli::FILE);
+        let text = std::fs::read_to_string(self.repo.root.join(&file))
+            .map_err(|_| format!("`{pkg}` has no `{file}` to check `args` against"))?;
+        let tree: cli::Command = serde_json::from_str(&text).map_err(|e| format!("{file}: {e}"))?;
+        tree.check(args).map_err(|why| format!("{file}: {why}"))
     }
 
     /// Registrants of `of` with no `has`, by key.

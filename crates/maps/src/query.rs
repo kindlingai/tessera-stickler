@@ -48,6 +48,9 @@ impl Atlas {
             for (field, value, got) in self.refs(s) {
                 let _ = writeln!(out, "     {field:<4} {value}  {}", place(&got));
             }
+            if let Some(args) = &s.args {
+                let _ = writeln!(out, "     args {}", args.join(" "));
+            }
         }
         for e in &map.task.each {
             let e = e.get_ref();
@@ -132,7 +135,7 @@ impl Atlas {
         let mut text = map.id.clone();
         for step in &map.task.steps {
             let s = step.get_ref();
-            let _ = write!(text, "|{}:{:?}", s.verb.name(), s.mode);
+            let _ = write!(text, "|{}:{:?}:{:?}", s.verb.name(), s.mode, s.args);
             for (field, value, got) in self.refs(s) {
                 let mut files: Vec<String> = got
                     .unwrap_or_default()

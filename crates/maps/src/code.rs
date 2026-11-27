@@ -54,6 +54,7 @@ pub struct Module {
 }
 
 pub struct Repo {
+    pub root: std::path::PathBuf,
     pub files: Vec<String>,
     sources: BTreeMap<String, Source>,
     pub crates: BTreeMap<String, Krate>,
@@ -301,6 +302,7 @@ impl Repo {
             }
         }
         Ok(Repo {
+            root: root.to_path_buf(),
             files,
             sources,
             crates,
