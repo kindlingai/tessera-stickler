@@ -53,6 +53,8 @@ pub struct Step {
     pub via: Option<String>,
     pub pkg: Option<String>,
     pub mode: Option<Mode>,
+    /// Words for a binary `run`, checked against its `cli.json`.
+    pub args: Option<Vec<String>>,
 }
 
 #[derive(Deserialize)]
@@ -78,7 +80,7 @@ impl Verb {
             Verb::Define | Verb::Register | Verb::Implement => (&["with", "like"], &[]),
             Verb::List | Verb::Place => (&["at", "like"], &[]),
             Verb::Test => (&["with", "like"], &["via"]),
-            Verb::Run => (&["pkg", "mode"], &[]),
+            Verb::Run => (&["pkg", "mode"], &["args"]),
         }
     }
 
@@ -120,6 +122,9 @@ impl Step {
         let mut set: Vec<&str> = self.refs().iter().map(|r| r.0).collect();
         if self.mode.is_some() {
             set.push("mode");
+        }
+        if self.args.is_some() {
+            set.push("args");
         }
         for f in need {
             if !set.contains(f) {
@@ -199,6 +204,14 @@ fn class_ok(value: &str, class: Class) -> bool {
         Class::Path | Class::Glob => value.split('/').all(|p| file_part(p, class == Class::Glob)),
         Class::Package => value.split('-').all(segment_ok),
     }
+}
+
+/// A command-line word: no spaces and no prose punctuation.
+fn arg_ok(arg: &str) -> bool {
+    !arg.is_empty()
+        && arg
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "_.:/@=<>,+-".contains(c))
 }
 
 fn fault(path: &str, line: usize, message: String) -> Fault {
@@ -285,6 +298,9 @@ impl Map {
                 if !class_ok(value, class) {
                     out.push(self.fault(line, format!("{head} `{field}` is not a reference")));
                 }
+            }
+            for arg in s.args.iter().flatten().filter(|a| !arg_ok(a)) {
+                out.push(self.fault(line, format!("{head} arg `{arg}` is not one word")));
             }
         }
         for e in each {

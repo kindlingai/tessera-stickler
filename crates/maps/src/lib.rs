@@ -1,6 +1,7 @@
 //! Task maps: ordered verb steps over checked code references.
 
 mod calls;
+mod cli;
 mod code;
 mod context;
 mod map;
@@ -8,6 +9,8 @@ mod query;
 mod registry;
 mod verbs;
 
+#[cfg(test)]
+mod cli_test;
 #[cfg(test)]
 mod verbs_test;
 
