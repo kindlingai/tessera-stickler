@@ -8,6 +8,7 @@ publish.workspace = true
 
 [dependencies]
 anyhow = "1"
+half = "2"
 eg2cpu = { git = "https://github.com/undrgrnd-labs/hunch", rev = "a80156abbf8ec2e5a9b85ed0e5ff98454c1aaa09" }
 stickler-findings.workspace = true
 stickler-shape.workspace = true

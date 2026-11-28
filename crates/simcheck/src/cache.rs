@@ -2,14 +2,15 @@
 
 use crate::fetch::REVISION;
 use anyhow::{Result, ensure};
+use half::f16;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-/// Changes with the file layout. Entries carry their last use.
-const MAGIC: &[u8; 8] = b"simck002";
-/// The layout before last uses. Its entries load as new.
-const OLD_MAGIC: &[u8; 8] = b"simck001";
+/// Changes with the layout. Entries hold last use, f16 values.
+const MAGIC: &[u8; 8] = b"simck003";
+/// The f32 layout. It loads, then saves as `MAGIC`.
+const F32_MAGIC: &[u8; 8] = b"simck002";
 /// Saving drops entries unused for this long.
 pub(crate) const KEEP_SECS: u64 = 7 * 24 * 60 * 60;
 pub(crate) const SHARDS: u64 = 16;
@@ -46,13 +47,22 @@ pub(crate) struct Cache {
     map: Entries,
 }
 
-fn floats(bytes: &[u8]) -> Vec<f32> {
-    bytes
-        .as_chunks::<4>()
-        .0
-        .iter()
-        .map(|f| f32::from_le_bytes(*f))
-        .collect()
+/// Values of `width` bytes, f16 or f32.
+fn floats(bytes: &[u8], width: usize) -> Vec<f32> {
+    match width {
+        2 => bytes
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .map(|f| f16::from_le_bytes(*f).to_f32())
+            .collect(),
+        _ => bytes
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .map(|f| f32::from_le_bytes(*f))
+            .collect(),
+    }
 }
 
 /// One file's entries, or none if missing or unknown.
@@ -60,29 +70,27 @@ fn read_file(path: &Path) -> Result<(usize, Entries)> {
     let Ok(bytes) = std::fs::read(path) else {
         return Ok((0, Entries::new()));
     };
-    let old = bytes.get(..8) == Some(OLD_MAGIC);
-    if bytes.len() < 12 || (&bytes[..8] != MAGIC && !old) {
+    let width = match bytes.get(..8) {
+        Some(m) if m == MAGIC => 2,
+        Some(m) if m == F32_MAGIC => 4,
+        _ => return Ok((0, Entries::new())),
+    };
+    if bytes.len() < 12 {
         return Ok((0, Entries::new()));
     }
     let dim = u32::from_le_bytes(bytes[8..12].try_into()?) as usize;
-    let head = if old { 8 } else { 16 };
-    let entry = head + dim * 4;
+    let entry = 16 + dim * width;
     let body = &bytes[12..];
     ensure!(
         dim > 0 && body.len() % entry == 0,
         "{}: truncated",
         path.display()
     );
-    let loaded = now();
     let mut map = Entries::new();
     for e in body.chunks_exact(entry) {
         let k = u64::from_le_bytes(e[..8].try_into()?);
-        let used = if old {
-            loaded
-        } else {
-            u64::from_le_bytes(e[8..16].try_into()?)
-        };
-        map.insert(k, (used, floats(&e[head..])));
+        let used = u64::from_le_bytes(e[8..16].try_into()?);
+        map.insert(k, (used, floats(&e[16..], width)));
     }
     Ok((dim, map))
 }
@@ -97,7 +105,7 @@ fn write_file(path: &Path, dim: usize, entries: &Entries) -> Result<()> {
         let (used, v) = &entries[&k];
         out.extend(k.to_le_bytes());
         out.extend(used.to_le_bytes());
-        out.extend(v.iter().flat_map(|f| f.to_le_bytes()));
+        out.extend(v.iter().flat_map(|f| f16::from_f32(*f).to_le_bytes()));
     }
     let tmp = path.with_extension(format!("tmp{}", std::process::id()));
     std::fs::write(&tmp, out)?;
