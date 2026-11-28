@@ -1,4 +1,4 @@
-use crate::cache::{Cache, KEEP_SECS, key, now};
+use crate::cache::{Cache, KEEP_SECS, SHARDS, key, now};
 use std::path::PathBuf;
 
 fn scratch(name: &str) -> PathBuf {
@@ -36,4 +36,26 @@ fn saves_merge() {
     let back = Cache::load(&dir).unwrap();
     std::fs::remove_dir_all(&dir).unwrap();
     assert!(back.get(key("a")).is_some() && back.get(key("b")).is_some());
+}
+
+/// An f32 shard loads, then saves at half size.
+#[test]
+fn f32_shard_loads() {
+    let dir = scratch("f32");
+    std::fs::create_dir_all(&dir).unwrap();
+    let k = key("a");
+    let mut bytes = b"simck002".to_vec();
+    bytes.extend(2u32.to_le_bytes());
+    bytes.extend(k.to_le_bytes());
+    bytes.extend(now().to_le_bytes());
+    bytes.extend([0.5f32, 0.25].iter().flat_map(|f| f.to_le_bytes()));
+    let shard = dir.join(format!("{:02x}.bin", k % SHARDS));
+    std::fs::write(&shard, &bytes).unwrap();
+    let mut c = Cache::load(&dir).unwrap();
+    assert_eq!(c.get(k), Some(&vec![0.5, 0.25]));
+    c.save(&dir, &[k]).unwrap();
+    let saved = std::fs::metadata(&shard).unwrap().len();
+    assert_eq!(Cache::load(&dir).unwrap().get(k), Some(&vec![0.5, 0.25]));
+    std::fs::remove_dir_all(&dir).unwrap();
+    assert_eq!(saved as usize, bytes.len() - 4);
 }

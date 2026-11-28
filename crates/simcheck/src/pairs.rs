@@ -70,6 +70,23 @@ fn dot(a: &[f32], b: &[f32]) -> f32 {
     sums.iter().sum::<f32>() + tail
 }
 
+/// Leading dimensions that screen pairs before the full product.
+const PREFIX: usize = 128;
+/// Prefix scores sit at or above full scores on tessera.
+const PREFIX_SLACK: f32 = 0.03;
+
+/// Each embedding's unit-length prefix, in one buffer.
+fn prefixes(embs: &[Vec<f32>]) -> (usize, Vec<f32>) {
+    let n = embs.first().map_or(0, |e| e.len().min(PREFIX));
+    let mut out = Vec::with_capacity(n * embs.len());
+    for e in embs {
+        let p = &e[..n];
+        let len = dot(p, p).sqrt().max(f32::MIN_POSITIVE);
+        out.extend(p.iter().map(|x| x / len));
+    }
+    (n, out)
+}
+
 /// A small id for each distinct value of `of`.
 fn ids<'a>(wins: &'a [Window], of: impl Fn(&'a Window) -> &'a str) -> Vec<usize> {
     let mut seen: BTreeMap<&str, usize> = BTreeMap::new();
@@ -102,6 +119,8 @@ pub fn near(
         .map(|w| stickler_shape::matches(&allow.spec, &w.path))
         .collect();
     let wanted = |i: usize| focus.is_none_or(|f| f[i]);
+    let (n, pre) = prefixes(embs);
+    let screen = min - PREFIX_SLACK;
     let found: Vec<(usize, usize, f32)> = (0..wins.len())
         .into_par_iter()
         .flat_map_iter(|i| {
@@ -114,6 +133,9 @@ pub fn near(
                     continue;
                 }
                 if file[i] != file[j] && spec[i] && spec[j] {
+                    continue;
+                }
+                if dot(&pre[i * n..][..n], &pre[j * n..][..n]) < screen {
                     continue;
                 }
                 let s = dot(&embs[i], &embs[j]);
