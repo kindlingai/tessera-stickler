@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/kindlingai/tessera-stickler/compare/v0.4.5...v0.4.6) (2026-11-28)
+
+
+### Performance
+
+* **simcheck:** store embeddings as f16 and screen pairs on a prefix ([#13](https://github.com/kindlingai/tessera-stickler/issues/13)) ([1695c19](https://github.com/kindlingai/tessera-stickler/commit/1695c19ef6574c282d625a9eaf2181bd09ea0e5c))
+
 ## [0.4.5](https://github.com/kindlingai/tessera-stickler/compare/v0.4.4...v0.4.5) (2026-11-27)
 
 
